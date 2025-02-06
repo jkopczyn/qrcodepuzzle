@@ -32,7 +32,6 @@ def bool_grid_to_counts(bool_grid):
         for col in range(width):
             count_row.append(count_adjacent_ones(bool_grid, row, col))
         count_grid.append(count_row)
-        
     return count_grid
 
 def save_grid_to_file(grid, file_path):
@@ -44,9 +43,41 @@ def save_grid_to_file(grid, file_path):
     with open(file_path, 'w') as file:
         file.write(output_str)
 
+def encode_grid_as_tatham_string(grid):
+    if not grid or not grid[0]:
+        return "#0x0:"
+    height = len(grid)
+    width = len(grid)
+    if height != width:
+        raise ValueError("Grid must be square")
+    puzzle_string = f"#{height}x{width}:"
+    current_blanks = 0
+
+    # Flatten grid into single sequence
+    flattened = [num for row in grid for num in row]
+
+    for num in flattened:
+        if num == ' ':
+            current_blanks += 1
+            if current_blanks == 26:
+                puzzle_string += 'z'
+                current_blanks = 0
+        else:
+            if current_blanks > 0:
+                puzzle_string += chr(ord('a') + current_blanks - 1)
+                current_blanks = 0
+            puzzle_string += str(num)
+
+    if current_blanks > 0:
+        puzzle_string += chr(ord('a') + current_blanks - 1)    
+    return puzzle_string
     
 
 if __name__ == "__main__":
     bool_grid = load_boolean_grid('bool_grid.txt')
     count_grid = bool_grid_to_counts(bool_grid)
     save_grid_to_file(count_grid, 'count_grid.txt')
+    tatham_string = encode_grid_as_tatham_string(count_grid)
+    with open('tatham_encoding.txt', 'w') as f:
+        f.write(tatham_string)
+    print(tatham_string)
