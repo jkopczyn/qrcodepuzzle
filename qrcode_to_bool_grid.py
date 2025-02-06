@@ -1,5 +1,6 @@
 from PIL import Image
 import io
+import sys
 
 def open_png_file(file_path):
     try:
@@ -18,8 +19,7 @@ def qrcode_to_boolean_grid(qrcode_image):
     # Convert binary data to image using PIL
     image = Image.open(io.BytesIO(qrcode_image))
 
-    # Convert to grayscale
-    image = image.convert('L')
+    image = image.convert('L') # Convert to grayscale
     width, height = image.size
     bool_grid = []
     threshold = 128
@@ -50,9 +50,9 @@ def shrink_boolean_grid(bool_grid):
     shrunk_grid = []
     
     # Process grid in 3x3 blocks
-    for y in range(0, height, 3):
+    for y in range(12, height-12, 3):
         shrunk_row = []
-        for x in range(0, width, 3):
+        for x in range(12, width-12, 3):
             # Get all values in 3x3 block
             block = [
                 bool_grid[y+i][x+j] 
@@ -79,7 +79,7 @@ def print_boolean_grid(bool_grid):
     return grid_string
 
 if __name__ == "__main__":
-    qrcode_image = open_png_file('smaller_mosaic.png')
+    qrcode_image = open_png_file(sys.argv[1])
     bool_grid = shrink_boolean_grid(qrcode_to_boolean_grid(qrcode_image))
     print_boolean_grid(bool_grid)
     open('bool_grid.txt', 'w').write(print_boolean_grid(bool_grid))

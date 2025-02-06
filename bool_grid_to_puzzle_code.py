@@ -1,7 +1,7 @@
 from load_bool_grid import load_boolean_grid
 
 
-def count_adjacent_zeros(grid, row, col):
+def count_adjacent_ones(grid, row, col):
     count = 0
     height = len(grid)
     width = len(grid[0])
@@ -13,8 +13,8 @@ def count_adjacent_zeros(grid, row, col):
             adj_row = row + i
             adj_col = col + j
             if 0 <= adj_row < height and 0 <= adj_col < width:
-                # Count if adjacent cell is False (0)
-                if not grid[adj_row][adj_col]:
+                # Count if adjacent cell is True (1)
+                if grid[adj_row][adj_col]:
                     count += 1
     
     return count
@@ -30,7 +30,7 @@ def bool_grid_to_counts(bool_grid):
     for row in range(height):
         count_row = []
         for col in range(width):
-            count_row.append(count_adjacent_zeros(bool_grid, row, col))
+            count_row.append(count_adjacent_ones(bool_grid, row, col))
         count_grid.append(count_row)
         
     return count_grid
