@@ -74,9 +74,11 @@ def encode_grid_as_tatham_string(grid):
     
 
 if __name__ == "__main__":
-    bool_grid = load_boolean_grid('bool_grid.txt')
-    count_grid = bool_grid_to_counts(bool_grid)
-    save_grid_to_file(count_grid, 'count_grid.txt')
+    # bool_grid = load_boolean_grid('bool_grid.txt')
+    # count_grid = bool_grid_to_counts(bool_grid)
+    # save_grid_to_file(count_grid, 'count_grid.txt')
+    with open('count_grid.txt', 'r') as f:
+        count_grid = f.read().splitlines()
     tatham_string = encode_grid_as_tatham_string(count_grid)
     with open('tatham_encoding.txt', 'w') as f:
         f.write(tatham_string)
