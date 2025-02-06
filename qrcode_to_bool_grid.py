@@ -71,13 +71,14 @@ def shrink_boolean_grid(bool_grid):
         
     return shrunk_grid
 
-
-# test
-
 def print_boolean_grid(bool_grid):
+    grid_string = ''
     for row in bool_grid:
-        print(''.join(['#' if pixel else '.' for pixel in row]))
+        grid_string += ''.join(['#' if pixel else '.' for pixel in row]) +'\n'
+    print(grid_string)
+    return grid_string
 
 qrcode_image = open_png_file('smaller_mosaic.png')
 bool_grid = shrink_boolean_grid(qrcode_to_boolean_grid(qrcode_image))
 print_boolean_grid(bool_grid)
+open('grid.txt', 'w').write(print_boolean_grid(bool_grid))
