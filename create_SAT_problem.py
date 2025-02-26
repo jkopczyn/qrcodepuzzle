@@ -49,7 +49,11 @@ def create_eqN_constraint(x_vars, n):
     Returns (cnf_clauses, counter_vars) where counter_vars is a dict mapping (i,j) to variable numbers
     """
     cnf = []
-    next_var = max(x_vars) + 1
+    global nonce
+    if 'nonce' not in globals():
+        nonce = max(x_vars) + 1
+    next_var = nonce
+    nonce = next_var + (len(x_vars) * (n+1))  # Reserve space for all counter vars
     counter_vars = {}  # Maps (i,j) to variable number for s_ij
     
     # Create counter variables s_ij
@@ -114,6 +118,29 @@ def create_eqN_constraint(x_vars, n):
     
     return cnf, counter_vars
 
+def create_multiple_eqN_constraints(constraints):
+    """
+    Takes a list of (N, vars) tuples and returns a CNF encoding all constraints in conjunction.
+    Each tuple specifies that exactly N of the variables must be True.
+
+    Args:
+        constraints: List of tuples (N, vars) where N is the count and vars is list of variable indices
+
+    Returns:
+        List of clauses representing the conjunction of all eq_N constraints
+    """
+    cnf = []
+    counter_vars_list = []
+
+    # Create eq_N constraint for each specification
+    for n, x_vars in constraints:
+        clauses, counter_vars = create_eqN_constraint(x_vars, n)
+        cnf.extend(clauses)
+        counter_vars_list.append(counter_vars)
+
+    return cnf, counter_vars_list
+
+
 # Example usage:
 def test_eqN(n):
     # Create 5 variables (numbered 1-5)
@@ -122,17 +149,34 @@ def test_eqN(n):
     cnf = CNF()
     clauses, counter_vars = create_eqN_constraint(x_vars, n)
     cnf.extend(clauses)
-    
+    result = test_cnf(cnf, x_vars)
+    assert len(result) <= n, "More than {} variables are True!".format(n)
+
+def test_cnf(cnf, vars):
     with Glucose3(cnf) as solver:
         if solver.solve():
             model = solver.get_model()
             # Show which x variables are True
-            result = [i for i in x_vars if model[i-1] > 0]
+            result = [i for i in vars if model[i-1] > 0]
             print(f"Solution found: variables {result} are True")
-            assert len(result) <= n, "More than {} variables are True!".format(n)
+            return result
         else:
             print("No solution found")
 
 if __name__ == "__main__":
     test_eqN(3)
     test_eqN(5)
+# Example:
+# 453
+# 453
+# 221
+# 4--
+# -5-
+# -2-
+    big_cnf, counters = create_multiple_eqN_constraints([
+        (4, [1,2,4,5]),
+        (5, [1,2,3,4,5,6,7,8,9]),
+        (2, [4,5,6,7,8,9])
+    ])
+    print(big_cnf)
+    test_cnf(big_cnf, list(range(1,10)))
