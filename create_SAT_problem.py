@@ -173,10 +173,11 @@ if __name__ == "__main__":
 # 4--
 # -5-
 # -2-
-    big_cnf, counters = create_multiple_eqN_constraints([
+    max_possible_var = 1000  # Set this to whatever your maximum variable number might be
+    clauses, counter_vars = create_multiple_eqN_constraints([
         (4, [1,2,4,5]),
         (5, [1,2,3,4,5,6,7,8,9]),
         (2, [4,5,6,7,8,9])
-    ])
-    print(big_cnf)
-    test_cnf(big_cnf, list(range(1,10)))
+    ], start_nonce=max_possible_var + 1)
+    print(clauses)
+    test_cnf(clauses, list(range(1,10)))
