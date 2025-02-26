@@ -43,7 +43,7 @@
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-def create_exactly3_constraint(x_vars):
+def create_eq3_constraint(x_vars):
     """
     Creates an exactly-3 constraint over the given x variables using sequential counter encoding.
     Returns (cnf_clauses, counter_vars) where counter_vars is a dict mapping (i,j) to variable numbers
@@ -87,7 +87,6 @@ def create_exactly3_constraint(x_vars):
             cnf.append([-x_vars[var_idx], -counter_vars[(i-1,j-1)], counter_vars[(i,j)]])
             cnf.append([-counter_vars[(i-1,j)], counter_vars[(i,j)]])
             
-            
             # PROP22: (sij -> (xi OR s(i-1)j)) AND (sij -> (s(i-1)(j-1) OR s(i-1)j))
             cnf.append([-counter_vars[(i,j)], x_vars[var_idx], counter_vars[(i-1,j)]])
             cnf.append([-counter_vars[(i,j)], counter_vars[(i-1,j-1)], counter_vars[(i-1,j)]])
@@ -96,26 +95,32 @@ def create_exactly3_constraint(x_vars):
     last_i = len(x_vars)
     last_x = x_vars[-1]
     
-    # PROP03: (xn -> ~s(n-1)3) - max_3 constraint
-    cnf.append([-last_x, -counter_vars[(last_i-1,3)]])
-    
     # Similar props as middle variables
     cnf.append([-last_x, counter_vars[(last_i,1)]])
     cnf.append([-counter_vars[(last_i-1,1)], counter_vars[(last_i,1)]])
     cnf.append([-counter_vars[(last_i,1)], last_x, counter_vars[(last_i-1,1)]])
     
+    for j in range(2, 4):
+        # Add counter propagation for last variable
+        cnf.append([-last_x, -counter_vars[(last_i-1,j-1)], counter_vars[(last_i,j)]])
+        cnf.append([-counter_vars[(last_i-1,j)], counter_vars[(last_i,j)]])
+        cnf.append([-counter_vars[(last_i,j)], last_x, counter_vars[(last_i-1,j)]])
+        cnf.append([-counter_vars[(last_i,j)], counter_vars[(last_i-1,j-1)], counter_vars[(last_i-1,j)]])
+
     # PROP05: (sn3) - must have exactly 3 true
     cnf.append([counter_vars[(last_i,3)]])
+    # PROP03: (xn -> ~s(n-1)3) - max_3 constraint
+    cnf.append([-last_x, -counter_vars[(last_i-1,3)]])
     
     return cnf, counter_vars
 
 # Example usage:
-def test_max3():
+def test_eq3():
     # Create 5 variables (numbered 1-5)
     x_vars = list(range(1, 6))
     
     cnf = CNF()
-    clauses, counter_vars = create_max3_constraint(x_vars)
+    clauses, counter_vars = create_eq3_constraint(x_vars)
     cnf.extend(clauses)
     
     with Glucose3(cnf) as solver:
@@ -129,4 +134,4 @@ def test_max3():
             print("No solution found")
 
 if __name__ == "__main__":
-    test_max3()
+    test_eq3()
