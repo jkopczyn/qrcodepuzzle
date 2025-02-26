@@ -1,3 +1,4 @@
+import json
 # Example:
 # 453
 # 453
@@ -61,8 +62,7 @@ def load_count_grid(filename):
 
 def save_constraints_to_file(constraints, filename):
     with open(filename, 'w') as f:
-        for count, vars in constraints:
-            f.write(f"({count}, {vars}),\n")
+        f.write(json.dumps(constraints))
 
 if __name__ == "__main__":
     count_grid = load_count_grid('count_grid.txt')

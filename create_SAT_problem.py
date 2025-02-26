@@ -166,7 +166,7 @@ def test_cnf(cnf, vars):
 if __name__ == "__main__":
     test_eqN(3)
     test_eqN(5)
-# Example:
+# Examples:
 # 453
 # 453
 # 221
