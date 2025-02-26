@@ -43,9 +43,9 @@
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-def create_eq3_constraint(x_vars):
+def create_eqN_constraint(x_vars, n):
     """
-    Creates an exactly-3 constraint over the given x variables using sequential counter encoding.
+    Creates an exactly-N constraint over the given x variables using sequential counter encoding.
     Returns (cnf_clauses, counter_vars) where counter_vars is a dict mapping (i,j) to variable numbers
     """
     cnf = []
@@ -54,7 +54,7 @@ def create_eq3_constraint(x_vars):
     
     # Create counter variables s_ij
     for i in range(1, len(x_vars) + 1):
-        for j in range(1, 4):  # Count up to 3
+        for j in range(1, n+1):  # Count up to n
             counter_vars[(i,j)] = next_var
             next_var += 1
     
@@ -64,8 +64,8 @@ def create_eq3_constraint(x_vars):
     # PROP02: (s11 -> x1)
     cnf.append([-counter_vars[(1,1)], x_vars[0]])
     # PROP04: (~s12 AND ~s13) - impossible to have >1 true in 1 var
-    cnf.append([-counter_vars[(1,2)]])
-    cnf.append([-counter_vars[(1,3)]])
+    for i in range(2,n+1):
+        cnf.append([-counter_vars[(1,i)]])
     
     # For middle variables
     for i in range(2, len(x_vars)):
@@ -73,7 +73,7 @@ def create_eq3_constraint(x_vars):
         
         # PROP11: (xi -> si1) AND (xi -> ~s(i-1)3)
         cnf.append([-x_vars[var_idx], counter_vars[(i,1)]])
-        cnf.append([-x_vars[var_idx], -counter_vars[(i-1,3)]])
+        cnf.append([-x_vars[var_idx], -counter_vars[(i-1,n)]])
         
         # PROP12: (s(i-1)1 -> si1)
         cnf.append([-counter_vars[(i-1,1)], counter_vars[(i,1)]])
@@ -82,7 +82,7 @@ def create_eq3_constraint(x_vars):
         cnf.append([-counter_vars[(i,1)], x_vars[var_idx], counter_vars[(i-1,1)]])
         
         # For each counter value j
-        for j in range(2, 4):
+        for j in range(2, n+1):
             # PROP21: ((xi AND s(i-1)(j-1)) -> sij) AND (s(i-1)j -> sij)
             cnf.append([-x_vars[var_idx], -counter_vars[(i-1,j-1)], counter_vars[(i,j)]])
             cnf.append([-counter_vars[(i-1,j)], counter_vars[(i,j)]])
@@ -100,7 +100,7 @@ def create_eq3_constraint(x_vars):
     cnf.append([-counter_vars[(last_i-1,1)], counter_vars[(last_i,1)]])
     cnf.append([-counter_vars[(last_i,1)], last_x, counter_vars[(last_i-1,1)]])
     
-    for j in range(2, 4):
+    for j in range(2, n+1):
         # Add counter propagation for last variable
         cnf.append([-last_x, -counter_vars[(last_i-1,j-1)], counter_vars[(last_i,j)]])
         cnf.append([-counter_vars[(last_i-1,j)], counter_vars[(last_i,j)]])
@@ -108,19 +108,19 @@ def create_eq3_constraint(x_vars):
         cnf.append([-counter_vars[(last_i,j)], counter_vars[(last_i-1,j-1)], counter_vars[(last_i-1,j)]])
 
     # PROP05: (sn3) - must have exactly 3 true
-    cnf.append([counter_vars[(last_i,3)]])
+    cnf.append([counter_vars[(last_i,n)]])
     # PROP03: (xn -> ~s(n-1)3) - max_3 constraint
-    cnf.append([-last_x, -counter_vars[(last_i-1,3)]])
+    cnf.append([-last_x, -counter_vars[(last_i-1,n)]])
     
     return cnf, counter_vars
 
 # Example usage:
-def test_eq3():
+def test_eqN(n):
     # Create 5 variables (numbered 1-5)
-    x_vars = list(range(1, 6))
+    x_vars = list(range(1, n+2))
     
     cnf = CNF()
-    clauses, counter_vars = create_eq3_constraint(x_vars)
+    clauses, counter_vars = create_eqN_constraint(x_vars, n)
     cnf.extend(clauses)
     
     with Glucose3(cnf) as solver:
@@ -129,9 +129,10 @@ def test_eq3():
             # Show which x variables are True
             result = [i for i in x_vars if model[i-1] > 0]
             print(f"Solution found: variables {result} are True")
-            assert len(result) <= 3, "More than 3 variables are True!"
+            assert len(result) <= n, "More than {} variables are True!".format(n)
         else:
             print("No solution found")
 
 if __name__ == "__main__":
-    test_eq3()
+    test_eqN(3)
+    test_eqN(5)
