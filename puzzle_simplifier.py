@@ -1,5 +1,6 @@
 import copy
 import random
+from typing import List, Tuple
 
 from mosaic_puzzle import MosaicPuzzle
 from uniqueness_checker import check_uniqueness
@@ -12,7 +13,7 @@ def simplify_puzzle(puzzle: MosaicPuzzle) -> MosaicPuzzle:
     simplified = copy.deepcopy(puzzle)
     
     # Try removing clues in random order to avoid bias
-    clue_positions = [(x, y) 
+    clue_positions: List[Tuple[int, int]] = [(x, y) 
                      for y in range(puzzle.height) 
                      for x in range(puzzle.width) 
                      if puzzle.clues[y][x] is not None]

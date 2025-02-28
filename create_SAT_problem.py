@@ -40,21 +40,30 @@
 #         )       # end iteration
 # PROPxy are handles to implement later
 
+from typing import List, Tuple, Dict
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-def create_eqN_constraint(x_vars, n):
+def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
     """
     Creates an exactly-N constraint over the given x variables using sequential counter encoding.
-    Returns (cnf_clauses, counter_vars) where counter_vars is a dict mapping (i,j) to variable numbers
+    
+    Args:
+        x_vars: List of variable numbers to constrain
+        n: The exact number of variables that must be True
+        
+    Returns:
+        Tuple containing:
+        - List of CNF clauses (each clause is a list of integers)
+        - Dict mapping counter variable positions (i,j) to their variable numbers
     """
-    cnf = []
+    cnf: List[List[int]] = []
     global nonce
     if 'nonce' not in globals():
         nonce = max(x_vars) + 1
-    next_var = nonce
+    next_var: int = nonce
     nonce = next_var + (len(x_vars) * (n+1))  # Reserve space for all counter vars
-    counter_vars = {}  # Maps (i,j) to variable number for s_ij
+    counter_vars: Dict[Tuple[int, int], int] = {}  # Maps (i,j) to variable number for s_ij
     
     # Create counter variables s_ij
     for i in range(1, len(x_vars) + 1):
@@ -118,7 +127,7 @@ def create_eqN_constraint(x_vars, n):
     
     return cnf, counter_vars
 
-def create_multiple_eqN_constraints(constraints):
+def create_multiple_eqN_constraints(constraints: List[Tuple[int, List[int]]]) -> Tuple[List[List[int]], List[Dict[Tuple[int, int], int]]]:
     """
     Takes a list of (N, vars) tuples and returns a CNF encoding all constraints in conjunction.
     Each tuple specifies that exactly N of the variables must be True.
@@ -127,10 +136,12 @@ def create_multiple_eqN_constraints(constraints):
         constraints: List of tuples (N, vars) where N is the count and vars is list of variable indices
 
     Returns:
-        List of clauses representing the conjunction of all eq_N constraints
+        Tuple containing:
+        - List of clauses representing the conjunction of all eq_N constraints
+        - List of counter variable dictionaries, one per constraint
     """
-    cnf = []
-    counter_vars_list = []
+    cnf: List[List[int]] = []
+    counter_vars_list: List[Dict[Tuple[int, int], int]] = []
 
     # Create eq_N constraint for each specification
     for n, x_vars in constraints:
@@ -142,9 +153,9 @@ def create_multiple_eqN_constraints(constraints):
 
 
 # Example usage:
-def test_eqN(n):
+def test_eqN(n: List[int]) -> None:
     # Create 5 variables (numbered 1-5)
-    x_vars = list(range(1, n+2))
+    x_vars: List[int] = list(range(1, n+2))
     
     cnf = CNF()
     clauses, counter_vars = create_eqN_constraint(x_vars, n)
@@ -152,16 +163,27 @@ def test_eqN(n):
     result = test_cnf(cnf, x_vars)
     assert len(result) <= n, "More than {} variables are True!".format(n)
 
-def test_cnf(cnf, vars):
+def test_cnf(cnf: CNF, vars: List[int]) -> List[int]:
+    """
+    Test a CNF formula and return the variables that are True in the solution.
+    
+    Args:
+        cnf: The CNF formula to test
+        vars: List of variables to check in the solution
+        
+    Returns:
+        List of variables that are True in the solution, or empty list if no solution
+    """
     with Glucose3(cnf) as solver:
         if solver.solve():
             model = solver.get_model()
             # Show which x variables are True
-            result = [i for i in vars if model[i-1] > 0]
+            result: List[int] = [i for i in vars if model[i-1] > 0]
             print(f"Solution found: variables {result} are True")
             return result
         else:
             print("No solution found")
+            return []
 
 if __name__ == "__main__":
     test_eqN(3)
@@ -173,11 +195,10 @@ if __name__ == "__main__":
 # 4--
 # -5-
 # -2-
-    max_possible_var = 1000  # Set this to whatever your maximum variable number might be
     clauses, counter_vars = create_multiple_eqN_constraints([
         (4, [1,2,4,5]),
         (5, [1,2,3,4,5,6,7,8,9]),
         (2, [4,5,6,7,8,9])
-    ], start_nonce=max_possible_var + 1)
+    ])
     print(clauses)
     test_cnf(clauses, list(range(1,10)))
