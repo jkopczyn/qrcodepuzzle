@@ -1,6 +1,7 @@
+from typing import List
 from load_bool_grid import load_boolean_grid
 
-def count_adjacent_ones(grid, row, col):
+def count_adjacent_ones(grid: List[List[bool]], row: int, col: int) -> int:
     count = 0
     height = len(grid)
     width = len(grid[0])
@@ -18,22 +19,22 @@ def count_adjacent_ones(grid, row, col):
     
     return count
 
-def bool_grid_to_counts(bool_grid):
+def bool_grid_to_counts(bool_grid: List[List[bool]]) -> List[List[int]]:
     if not bool_grid or not bool_grid[0]:
         return []
         
-    height = len(bool_grid)
-    width = len(bool_grid[0])
+    height: int = len(bool_grid)
+    width: int = len(bool_grid[0])
     
-    count_grid = []
+    count_grid: List[List[int]] = []
     for row in range(height):
-        count_row = []
+        count_row: List[int] = []
         for col in range(width):
             count_row.append(count_adjacent_ones(bool_grid, row, col))
         count_grid.append(count_row)
     return count_grid
 
-def save_grid_to_file(grid, file_path):
+def save_grid_to_file(grid: List[List[int]], file_path: str) -> None:
     output_str = ''
     for row in grid:
         row_str = ''.join(str(x) if x >= 0 else '-' for x in row) + '\n'

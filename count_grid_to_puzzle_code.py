@@ -1,15 +1,17 @@
-def encode_grid_as_tatham_string(grid):
+from typing import List
+
+def encode_grid_as_tatham_string(grid: List[str]) -> str:
     if not grid or not grid[0]:
         return "#0x0:"
-    height = len(grid)
-    width = len(grid)
+    height: int = len(grid)
+    width: int = len(grid)
     if height != width:
         raise ValueError("Grid must be square")
-    puzzle_string = f"#{height}x{width}:"
-    current_blanks = 0
+    puzzle_string: str = f"#{height}x{width}:"
+    current_blanks: int = 0
 
     # Flatten grid into sequence and convert strings to integers
-    flattened = []
+    flattened: List[int] = []
     for row in grid:
         for cell in row:
             if cell == '-':
@@ -35,8 +37,8 @@ def encode_grid_as_tatham_string(grid):
 
 if __name__ == "__main__":
     with open('count_grid.txt', 'r') as f:
-        count_grid = f.read().splitlines()
-    tatham_string = encode_grid_as_tatham_string(count_grid)
+        count_grid: List[str] = f.read().splitlines()
+    tatham_string: str = encode_grid_as_tatham_string(count_grid)
     with open('tatham_encoding.txt', 'w') as f:
         f.write(tatham_string)
     print(tatham_string)
