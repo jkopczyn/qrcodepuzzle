@@ -8,11 +8,17 @@ def encode_grid_as_tatham_string(grid):
     puzzle_string = f"#{height}x{width}:"
     current_blanks = 0
 
-    # Flatten grid into single sequence
-    flattened = [num for row in grid for num in row]
+    # Flatten grid into sequence and convert strings to integers
+    flattened = []
+    for row in grid:
+        for cell in row:
+            if cell == '-':
+                flattened.append(-1)
+            else:
+                flattened.append(int(cell))
 
     for num in flattened:
-        if num == ' ':
+        if num < 0:
             current_blanks += 1
             if current_blanks == 26:
                 puzzle_string += 'z'

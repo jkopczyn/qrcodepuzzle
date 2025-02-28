@@ -36,7 +36,7 @@ def bool_grid_to_counts(bool_grid):
 def save_grid_to_file(grid, file_path):
     output_str = ''
     for row in grid:
-        row_str = ''.join(map(str, row)) + '\n'
+        row_str = ''.join(str(x) if x >= 0 else '-' for x in row) + '\n'
         output_str += row_str
     print(output_str)
     with open(file_path, 'w') as file:

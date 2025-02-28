@@ -3,6 +3,8 @@ import random
 import copy
 from dataclasses import dataclass
 
+from bool_grid_to_count_grid import bool_grid_to_counts, count_adjacent_ones
+
 @dataclass
 class MosaicPuzzle:
     width: int
