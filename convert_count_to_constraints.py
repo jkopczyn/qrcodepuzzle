@@ -18,6 +18,18 @@ import json
 # (2, [4,5,6,7,8,9])
 
 def grid_to_constraints(grid):
+    """Convert a grid of count constraints into a list of (count, variables) tuples.
+
+    Takes a grid where each cell contains either a number or '-'. For each number in the grid,
+    creates a constraint tuple (N, vars) where N is the number and vars is a list of variable
+    indices representing that cell and its 8 adjacent neighbors.
+
+    Args:
+        grid: 2D list where each cell contains either an integer or '-'
+
+    Returns:
+        List of tuples (N, vars) where N is the count and vars is a sorted list of variable indices
+    """
     constraints = []
     for idx in range(len(grid)):
         row = grid[idx]
