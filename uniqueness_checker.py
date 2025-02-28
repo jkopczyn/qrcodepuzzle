@@ -2,7 +2,7 @@ from pysat.formula import CNF
 from pysat.solvers import Glucose3
 from typing import Tuple, Dict, Optional, List
 
-from convert_count_to_constraints import grid_to_constraints
+from count_grid_to_constraints import grid_to_constraints
 from create_SAT_problem import create_multiple_eqN_constraints
 from mosaic_puzzle import MosaicPuzzle
 
