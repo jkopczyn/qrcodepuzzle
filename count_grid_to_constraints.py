@@ -1,5 +1,5 @@
 import json
-from typing import List, Tuple, Union
+from typing import List, Tuple
 # Example:
 # 453
 # 453

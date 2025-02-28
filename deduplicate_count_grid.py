@@ -40,4 +40,6 @@ if __name__ == "__main__":
     height: int = len(existing_puzzle)
     grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
+    print(puzzle.clues)
     simplified = simplify_puzzle(puzzle)
+    print(simplified.clues)
