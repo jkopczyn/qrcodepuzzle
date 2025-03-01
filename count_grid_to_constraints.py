@@ -1,5 +1,5 @@
-import json
 from typing import List, Tuple, Dict
+import file_io
 # Example:
 # 453
 # 453
@@ -58,7 +58,7 @@ def grid_to_constraints(grid: List[List[int]]) -> Tuple[List[Tuple[int, List[int
             neighbor_vars: List[int] = []
             for nx, ny in neighbors:
                 if 0 <= nx < len(grid) and 0 <= ny < len(grid[0]):
-                    neighbor_vars.append(position_to_variable_int(grid, ny, nx))
+                    neighbor_vars.append(position_to_variable_int(grid, nx, ny))
             constraints.append((c, sorted(neighbor_vars)))
     return constraints, var_mapping
 
@@ -69,36 +69,9 @@ def position_to_variable_int(grid: List[List[int]], x: int, y: int) -> int:
     assert dim == len(grid[0])
     return (x+1) + dim*y
 
-def load_count_grid(filename: str) -> List[List[int]]:
-    grid: List[List[int]] = []
-    with open(filename) as f:
-        for line in f:
-            row: List[int] = []
-            for c in line.strip():
-                if c == '-':
-                    row.append(-1)
-                else:
-                    row.append(int(c))
-            grid.append(row)
-    return grid
-
-def save_constraints_and_mapping(constraints: List[Tuple[int, List[int]]], 
-                               var_mapping: Dict[Tuple[int, int], int], 
-                               constraints_file: str,
-                               mapping_file: str) -> None:
-    """Save both constraints and variable mapping to files."""
-    # Save constraints
-    with open(constraints_file, 'w') as f:
-        f.write(json.dumps(constraints))
-    
-    # Save var_mapping (convert tuple keys to strings for JSON)
-    serialized_mapping = {f"{x},{y}": v for (x,y), v in var_mapping.items()}
-    with open(mapping_file, 'w') as f:
-        f.write(json.dumps(serialized_mapping))
-
 if __name__ == "__main__":
-    count_grid = load_count_grid('count_grid.txt')
+    count_grid = file_io.load_count_grid('count_grid.txt')
     constraints, var_mapping = grid_to_constraints(count_grid)
     print(constraints)
-    save_constraints_and_mapping(constraints, var_mapping, 
-                               'constraints.txt', 'var_mapping.txt')
+    file_io.save_constraints(constraints, 'constraints.txt')
+    file_io.save_var_mapping(var_mapping, 'var_mapping.txt')

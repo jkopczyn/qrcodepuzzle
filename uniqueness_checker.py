@@ -48,4 +48,10 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
             for (x, y), var in var_mapping.items():
                 alt_solution[y][x] = model[var-1] > 0
             return False, alt_solution
-    return True, None 
+    return True, None
+
+if __name__ == "__main__":
+    puzzle = MosaicPuzzle.from_file('deduplicated_count_grid.txt')
+    is_unique, alt_solution = check_uniqueness(puzzle)
+    print(is_unique)
+    print(alt_solution)

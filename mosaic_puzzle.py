@@ -4,6 +4,7 @@ import copy
 from dataclasses import dataclass
 
 from bool_grid_to_count_grid import bool_grid_to_counts, count_adjacent_ones
+import file_io
 
 @dataclass
 class MosaicPuzzle:
@@ -19,6 +20,23 @@ class MosaicPuzzle:
         self.grid = grid
         self.clues = clues
         self.original_clues = copy.deepcopy(clues)
+
+    @classmethod
+    def from_file(cls, filename: str, boolean_grid_filename: Optional[str] = None):
+        existing_puzzle = file_io.load_count_grid(filename)
+        # Convert count grid to MosaicPuzzle
+        width: int = len(existing_puzzle[0])
+        height: int = len(existing_puzzle)
+        if boolean_grid_filename:
+            grid = file_io.load_boolean_grid(boolean_grid_filename)
+        else:
+            grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
+        return cls(width, height, grid, existing_puzzle)
+
+    def to_file(self, filename: str, boolean_grid_filename: Optional[str] = None):
+        file_io.save_count_grid(self.clues, filename)
+        if boolean_grid_filename:
+            file_io.save_boolean_grid(self.grid, boolean_grid_filename)
 
     @classmethod
     def generate_random(cls, width: int, height: int) -> 'MosaicPuzzle':
