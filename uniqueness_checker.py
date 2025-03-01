@@ -29,10 +29,10 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
     Returns (is_unique, alternative_solution)
     """
     # Convert puzzle to constraints using existing function
-    constraints = grid_to_constraints(puzzle.clues)
+    constraints, var_mapping = grid_to_constraints(puzzle.clues)
     
     # Create SAT encoding
-    cnf_clauses, var_mapping = create_multiple_eqN_constraints(constraints)
+    cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
     cnf = CNF(from_clauses=cnf_clauses)
     
     # Add blocking clauses for known solution
