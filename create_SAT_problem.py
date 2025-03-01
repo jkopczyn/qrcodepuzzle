@@ -44,6 +44,9 @@ from typing import List, Tuple, Dict
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
+from count_grid_to_constraints import load_count_grid, position_to_variable_int
+from mosaic_puzzle import MosaicPuzzle
+
 def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
     """
     Creates an exactly-N constraint over the given x variables using sequential counter encoding.
@@ -185,6 +188,44 @@ def test_cnf(cnf: CNF, vars: List[int]) -> List[int]:
             print("No solution found")
             return []
 
+def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
+    """
+    Convert puzzle clues to SAT constraints and create CNF encoding.
+    
+    Args:
+        puzzle_clues: 2D list of integers representing the puzzle clues
+        
+    Returns:
+        Tuple containing:
+        - List of CNF clauses
+        - Dictionary mapping (x,y) positions to variable numbers
+    """
+    # Create variable mapping first to know the highest variable number used
+    var_mapping: Dict[Tuple[int, int], int] = {}
+    for y in range(len(puzzle_clues)):
+        for x in range(len(puzzle_clues[0])):
+            var_mapping[(x,y)] = position_to_variable_int(puzzle_clues, x, y)
+    
+    # Initialize the global nonce to start after the highest grid variable
+    global nonce
+    nonce = max(var_mapping.values()) + 1
+    
+    # Rest of the function remains the same
+    constraints: List[Tuple[int, List[int]]] = []
+    for y in range(len(puzzle_clues)):
+        for x in range(len(puzzle_clues[0])):
+            if puzzle_clues[y][x] > 0:
+                vars_list = []
+                for dy in [-1, 0, 1]:
+                    for dx in [-1, 0, 1]:
+                        ny, nx = y+dy, x+dx
+                        if 0 <= ny < len(puzzle_clues) and 0 <= nx < len(puzzle_clues[0]):
+                            vars_list.append(var_mapping[(nx,ny)])
+                constraints.append((puzzle_clues[y][x], sorted(vars_list)))
+    
+    cnf, _ = create_multiple_eqN_constraints(constraints)
+    return cnf, var_mapping
+
 if __name__ == "__main__":
     test_eqN(3)
     test_eqN(5)
@@ -195,10 +236,16 @@ if __name__ == "__main__":
 # 4--
 # -5-
 # -2-
-    clauses, counter_vars = create_multiple_eqN_constraints([
-        (4, [1,2,4,5]),
-        (5, [1,2,3,4,5,6,7,8,9]),
-        (2, [4,5,6,7,8,9])
-    ])
+    # Load count grid from file
+    count_grid = load_count_grid('count_grid.txt')
+    
+    # Create puzzle object with empty grid and loaded clues
+    width = len(count_grid[0])
+    height = len(count_grid)
+    empty_grid = [[False] * width for _ in range(height)]
+    puzzle = MosaicPuzzle(width, height, empty_grid, count_grid)
+    
+    # Create SAT constraints from puzzle
+    clauses, var_mapping = create_constraints_from_puzzle(puzzle.clues)
     print(clauses)
-    test_cnf(clauses, list(range(1,10)))
+    test_cnf(clauses, list(range(1, width * height + 1)))
