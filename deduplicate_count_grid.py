@@ -29,5 +29,10 @@ if __name__ == "__main__":
     grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
     print(puzzle.clues)
-    simplified = simplify_puzzle(puzzle)
-    print(simplified.clues)
+    for i in range(len(puzzle.clues)**2):
+        simplified = simplify_puzzle(puzzle)
+        print(simplified.clues)
+        if simplified == puzzle:
+            break
+        puzzle = simplified
+    file_io.save_grid_to_file(puzzle.clues, 'deduplicated_count_grid.txt')
