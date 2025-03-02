@@ -23,10 +23,11 @@ from puzzle_simplifier import simplify_puzzle, randomize_clue_order
 
 if __name__ == "__main__":
     existing_puzzle = file_io.load_count_grid('count_grid.txt')
+    bool_grid = file_io.load_boolean_grid('bool_grid.txt')
     # Convert count grid to MosaicPuzzle
     width: int = len(existing_puzzle[0])
     height: int = len(existing_puzzle)
-    grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
+    grid: List[List[bool]] = bool_grid
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
     print("Starting puzzle: {}".format(puzzle.clues))
     clue_order = randomize_clue_order(puzzle)
