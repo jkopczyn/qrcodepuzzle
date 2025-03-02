@@ -44,7 +44,8 @@ from typing import List, Tuple, Dict
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-from count_grid_to_constraints import load_count_grid, position_to_variable_int
+from count_grid_to_constraints import grid_to_constraints, position_to_variable_int
+import file_io
 from mosaic_puzzle import MosaicPuzzle
 
 def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
@@ -200,31 +201,16 @@ def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[
         - List of CNF clauses
         - Dictionary mapping (x,y) positions to variable numbers
     """
-    # Create variable mapping first to know the highest variable number used
-    var_mapping: Dict[Tuple[int, int], int] = {}
-    for y in range(len(puzzle_clues)):
-        for x in range(len(puzzle_clues[0])):
-            var_mapping[(x,y)] = position_to_variable_int(puzzle_clues, x, y)
+    # Extract constraints from grid
+    constraints, var_mapping = grid_to_constraints(puzzle_clues)
     
     # Initialize the global nonce to start after the highest grid variable
     global nonce
     nonce = max(var_mapping.values()) + 1
     
-    # Rest of the function remains the same
-    constraints: List[Tuple[int, List[int]]] = []
-    for y in range(len(puzzle_clues)):
-        for x in range(len(puzzle_clues[0])):
-            if puzzle_clues[y][x] > 0:
-                vars_list = []
-                for dy in [-1, 0, 1]:
-                    for dx in [-1, 0, 1]:
-                        ny, nx = y+dy, x+dx
-                        if 0 <= ny < len(puzzle_clues) and 0 <= nx < len(puzzle_clues[0]):
-                            vars_list.append(var_mapping[(nx,ny)])
-                constraints.append((puzzle_clues[y][x], sorted(vars_list)))
-    
-    cnf, _ = create_multiple_eqN_constraints(constraints)
-    return cnf, var_mapping
+    # Create SAT encoding using constraints
+    cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
+    return cnf_clauses, var_mapping
 
 if __name__ == "__main__":
     test_eqN(3)
@@ -237,7 +223,7 @@ if __name__ == "__main__":
 # -5-
 # -2-
     # Load count grid from file
-    count_grid = load_count_grid('count_grid.txt')
+    count_grid = file_io.load_count_grid('count_grid.txt')
     
     # Create puzzle object with empty grid and loaded clues
     width = len(count_grid[0])
