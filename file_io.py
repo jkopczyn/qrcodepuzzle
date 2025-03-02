@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Optional, Tuple, Dict
 import json
 
 def save_boolean_grid(grid: List[List[int]], file_path: str) -> None:
@@ -37,14 +37,14 @@ def load_boolean_grid(file_path):
         print(f"Error: {str(e)}")
         return None
 
-def load_count_grid(filename: str) -> List[List[int]]:
-    grid: List[List[int]] = []
+def load_count_grid(filename: str) -> List[List[Optional[int]]]:
+    grid: List[List[Optional[int]]] = []
     with open(filename) as f:
         for line in f:
-            row: List[int] = []
+            row: List[Optional[int]] = []
             for c in line.strip():
                 if c == '-':
-                    row.append(-1)
+                    row.append(None)
                 else:
                     row.append(int(c))
             grid.append(row)

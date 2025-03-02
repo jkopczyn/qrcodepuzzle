@@ -31,8 +31,8 @@ if __name__ == "__main__":
     print(puzzle.clues)
     for i in range(len(puzzle.clues)**2):
         simplified = simplify_puzzle(puzzle)
-        print(simplified.clues)
-        if simplified == puzzle:
+        print("before: {}\n after: {}".format(puzzle.clues, simplified.clues))
+        if simplified.clues == puzzle.clues:
             break
         puzzle = simplified
     file_io.save_count_grid(puzzle.clues, 'deduplicated_count_grid.txt')
