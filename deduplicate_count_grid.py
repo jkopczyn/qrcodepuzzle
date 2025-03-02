@@ -29,7 +29,7 @@ if __name__ == "__main__":
     grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
     print("Starting puzzle: {}".format(puzzle.clues))
-    clue_positions: List[Tuple[int, int]] = None
+    clue_positions: List[Tuple[int, int]] = [(0, 0), (1, 0), (1, 1), (0, 2), (2, 0), (1, 2), (2, 1)]
     for i in range(len(puzzle.clues)**2):
         simplified, clue_positions = simplify_puzzle(puzzle, clue_positions)
         print("before: {}\n after: {}".format(puzzle.clues, simplified.clues))

@@ -5,7 +5,7 @@ from typing import List, Tuple
 from mosaic_puzzle import MosaicPuzzle
 from uniqueness_checker import check_uniqueness
 
-def simplify_puzzle(puzzle: MosaicPuzzle, next_clue_positions: List[Tuple[int, int]]) -> Tuple[MosaicPuzzle, List[Tuple[int, int]]]:
+def simplify_puzzle(puzzle: MosaicPuzzle, next_clue_positions: List[Tuple[int, int]] = None) -> Tuple[MosaicPuzzle, List[Tuple[int, int]]]:
     """
     Remove unnecessary clues while maintaining unique solvability.
     Returns simplified puzzle.
@@ -13,7 +13,7 @@ def simplify_puzzle(puzzle: MosaicPuzzle, next_clue_positions: List[Tuple[int, i
     simplified = copy.deepcopy(puzzle)
 
     if next_clue_positions is None:
-        # Try removing clues in random order to avoid bias
+        # Remove clues in random order, but set an order
         clue_positions: List[Tuple[int, int]] = [(x, y)
                          for y in range(puzzle.height)
                          for x in range(puzzle.width)
