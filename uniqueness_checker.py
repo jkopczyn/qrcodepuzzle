@@ -2,8 +2,8 @@ from pysat.formula import CNF
 from pysat.solvers import Glucose3
 from typing import Tuple, Dict, Optional, List
 
-from count_grid_to_constraints import grid_to_constraints
-from create_SAT_problem import create_multiple_eqN_constraints
+from process_count_grid import grid_to_constraints
+from sat_problems import create_multiple_eqN_constraints
 from mosaic_puzzle import MosaicPuzzle
 
 def create_blocking_clauses(var_mapping: Dict[Tuple[int, int], int], solution: List[List[bool]]) -> List[List[int]]:

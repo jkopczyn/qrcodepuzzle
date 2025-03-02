@@ -1,3 +1,4 @@
+import sys
 from typing import List
 import file_io
 
@@ -34,7 +35,27 @@ def bool_grid_to_counts(bool_grid: List[List[bool]]) -> List[List[int]]:
         count_grid.append(count_row)
     return count_grid
 
-if __name__ == "__main__":
-    bool_grid = file_io.load_boolean_grid('bool_grid.txt')
+def process_grid_files(input_file: str, output_file: str) -> None:
+    """
+    Processes a boolean grid file, converts it to a count grid, and saves the result.
+
+    Args:
+        input_file: Path to the input boolean grid file
+        output_file: Path to save the output count grid
+    """
+    bool_grid = file_io.load_boolean_grid(input_file)
     count_grid = bool_grid_to_counts(bool_grid)
-    file_io.save_count_grid(count_grid, 'count_grid.txt')
+    file_io.save_count_grid(count_grid, output_file)
+
+if __name__ == "__main__":
+    # Default filenames
+    input_file = 'bool_grid.txt'
+    output_file = 'count_grid.txt'
+
+    # Allow command-line arguments to override defaults
+    if len(sys.argv) > 1:
+        input_file = sys.argv[1]
+    if len(sys.argv) > 2:
+        output_file = sys.argv[2]
+
+    process_grid_files(input_file, output_file)

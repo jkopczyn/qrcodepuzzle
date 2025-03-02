@@ -22,8 +22,8 @@ class MosaicPuzzle:
         self.original_clues = copy.deepcopy(clues)
 
     @classmethod
-    def from_file(cls, filename: str, boolean_grid_filename: Optional[str] = None):
-        existing_puzzle = file_io.load_count_grid(filename)
+    def from_file(cls, count_grid_filename: str, boolean_grid_filename: Optional[str] = None):
+        existing_puzzle = file_io.load_count_grid(count_grid_filename)
         # Convert count grid to MosaicPuzzle
         width: int = len(existing_puzzle[0])
         height: int = len(existing_puzzle)
@@ -33,8 +33,8 @@ class MosaicPuzzle:
             grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
         return cls(width, height, grid, existing_puzzle)
 
-    def to_file(self, filename: str, boolean_grid_filename: Optional[str] = None):
-        file_io.save_count_grid(self.clues, filename)
+    def to_file(self, count_grid_filename: str, boolean_grid_filename: Optional[str] = None):
+        file_io.save_count_grid(self.clues, count_grid_filename)
         if boolean_grid_filename:
             file_io.save_boolean_grid(self.grid, boolean_grid_filename)
 

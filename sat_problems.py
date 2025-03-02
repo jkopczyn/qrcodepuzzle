@@ -40,11 +40,12 @@
 #         )       # end iteration
 # PROPxy are handles to implement later
 
+import sys
 from typing import List, Tuple, Dict
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-from count_grid_to_constraints import grid_to_constraints, position_to_variable_int
+from process_count_grid import grid_to_constraints, position_to_variable_int
 import file_io
 from mosaic_puzzle import MosaicPuzzle
 
@@ -213,25 +214,22 @@ def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[
     return cnf_clauses, var_mapping
 
 if __name__ == "__main__":
-    test_eqN(3)
-    test_eqN(5)
-# Examples:
-# 453
-# 453
-# 221
-# 4--
-# -5-
-# -2-
-    # Load count grid from file
-    count_grid = file_io.load_count_grid('count_grid.txt')
-    
-    # Create puzzle object with empty grid and loaded clues
-    width = len(count_grid[0])
-    height = len(count_grid)
-    empty_grid = [[False] * width for _ in range(height)]
-    puzzle = MosaicPuzzle(width, height, empty_grid, count_grid)
+    # test_eqN(3)
+    # test_eqN(5)
+ 
+
+    # Examples:
+    # 453
+    # 453
+    # 221
+    # 4--
+    # -5-
+    # -2-
+    count_grid_file = 'count_grid.txt' if len(sys.argv) < 2 else sys.argv[1]
+    bool_grid_file = 'bool_grid.txt' if len(sys.argv) < 3 else sys.argv[2]
+    puzzle = MosaicPuzzle.from_file(count_grid_file, bool_grid_file)
     
     # Create SAT constraints from puzzle
     clauses, var_mapping = create_constraints_from_puzzle(puzzle.clues)
     print(clauses)
-    test_cnf(clauses, list(range(1, width * height + 1)))
+    test_cnf(clauses, list(range(1, puzzle.width * puzzle.height + 1)))
