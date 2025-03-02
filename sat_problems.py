@@ -232,4 +232,5 @@ if __name__ == "__main__":
     # Create SAT constraints from puzzle
     clauses, var_mapping = create_constraints_from_puzzle(puzzle.clues)
     print(clauses)
+    print("Starting puzzle: {}".format(puzzle.clues))
     test_cnf(clauses, list(range(1, puzzle.width * puzzle.height + 1)))

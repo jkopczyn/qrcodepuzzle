@@ -50,6 +50,24 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
             return False, alt_solution
     return True, None
 
+def check_validity(puzzle: MosaicPuzzle) -> bool:
+    constraints, var_mapping = grid_to_constraints(puzzle.clues)
+
+    # Set the starting variable number for auxiliary variables
+    # to be after the highest grid variable
+    max_var = max(var_mapping.values()) + 1
+
+    # Initialize the global nonce in sat_problems
+    import sat_problems
+    sat_problems.nonce = max_var
+
+    cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
+    cnf = CNF(from_clauses=cnf_clauses)
+    with Glucose3(cnf) as solver:
+        if solver.solve():
+            return True
+    return False
+
 if __name__ == "__main__":
     puzzle = MosaicPuzzle.from_file('deduplicated_count_grid.txt')
     is_unique, alt_solution = check_uniqueness(puzzle)

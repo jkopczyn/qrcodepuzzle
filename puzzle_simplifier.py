@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 import file_io
 from mosaic_puzzle import MosaicPuzzle
-from uniqueness_checker import check_uniqueness
+import uniqueness_checker
 
 # Example:
 # 453
@@ -45,7 +45,7 @@ def simplify_puzzle(puzzle: MosaicPuzzle, clue_order: List[Tuple[int, int]] = No
     simplified.clues[y][x] = None
 
     # Check if still unique
-    is_unique, alt_solution = check_uniqueness(simplified)
+    is_unique, alt_solution = uniqueness_checker.check_uniqueness(simplified)
     if not is_unique:
         # Restore clue if needed for uniqueness
         simplified.restore_clue(x, y)
@@ -64,6 +64,11 @@ def randomize_clue_order(puzzle: MosaicPuzzle) -> List[Tuple[int, int]]:
 def deduplicate_count_grid(count_grid_filename: str, bool_grid_filename: str) -> MosaicPuzzle:
     puzzle: MosaicPuzzle = MosaicPuzzle.from_file(count_grid_filename, bool_grid_filename)
     print("Starting puzzle: {}".format(puzzle.clues))
+    if not uniqueness_checker.check_validity(puzzle):
+        print("Puzzle has no solution, cannot simplify")
+        return puzzle
+    else:
+        print("Puzzle has a solution, simplifying")
     clue_order = randomize_clue_order(puzzle)
     print(clue_order)
     for i in range(puzzle.width * puzzle.height):
