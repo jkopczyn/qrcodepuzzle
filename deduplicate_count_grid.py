@@ -35,4 +35,4 @@ if __name__ == "__main__":
         if simplified == puzzle:
             break
         puzzle = simplified
-    file_io.save_grid_to_file(puzzle.clues, 'deduplicated_count_grid.txt')
+    file_io.save_count_grid(puzzle.clues, 'deduplicated_count_grid.txt')

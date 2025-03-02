@@ -44,7 +44,7 @@ def grid_to_constraints(grid: List[List[int]]) -> Tuple[List[Tuple[int, List[int
     for y in range(len(grid)):
         for x in range(len(grid[0])):
             c = grid[y][x]
-            if c <= 0:  # Skip non-constraint cells
+            if c is None or c <= 0:  # Skip non-constraint cells
                 continue
 
             # Get all positions within one step (including diagonals)
