@@ -44,12 +44,8 @@ def shrink_boolean_grid(bool_grid):
     if width % 3 != 0 or height % 3 != 0:
         raise ValueError("Grid dimensions must be divisible by 3")
         
-    # Initialize smaller grid
-    shrunk_height = height // 3
-    shrunk_width = width // 3
-    shrunk_grid = []
-    
     # Process grid in 3x3 blocks
+    shrunk_grid = []
     for y in range(12, height-12, 3):
         shrunk_row = []
         for x in range(12, width-12, 3):
@@ -80,6 +76,8 @@ def print_boolean_grid(bool_grid):
 
 if __name__ == "__main__":
     qrcode_image = open_png_file(sys.argv[1])
+
     bool_grid = shrink_boolean_grid(qrcode_to_boolean_grid(qrcode_image))
     print_boolean_grid(bool_grid)
-    open('bool_grid.txt', 'w').write(print_boolean_grid(bool_grid))
+    output_file = sys.argv[2] if len(sys.argv) > 2 else 'bool_grid.txt'
+    open(output_file, 'w').write(print_boolean_grid(bool_grid))

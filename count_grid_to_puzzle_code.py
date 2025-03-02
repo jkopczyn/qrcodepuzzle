@@ -1,45 +1,26 @@
 from typing import List
-
 import file_io
+import sys
+from process_count_grid import encode_grid_as_tatham_string
 
-def encode_grid_as_tatham_string(grid: List[str]) -> str:
-    if not grid or not grid[0]:
-        return "#0x0:"
-    height: int = len(grid)
-    width: int = len(grid[0])
-    if height != width:
-        raise ValueError("Grid must be square")
-    puzzle_string: str = f"#{height}x{width}:"
-    current_blanks: int = 0
+# Format in:
+# 4--
+# -5-
+# -2-
 
-    # Flatten grid into sequence and convert strings to integers
-    flattened: List[int] = []
-    for row in grid:
-        for cell in row:
-            if cell == '-':
-                flattened.append(-1)
-            else:
-                flattened.append(int(cell))
-
-    for num in flattened:
-        if num < 0:
-            current_blanks += 1
-            if current_blanks == 26:
-                puzzle_string += 'z'
-                current_blanks = 0
-        else:
-            if current_blanks > 0:
-                puzzle_string += chr(ord('a') + current_blanks - 1)
-                current_blanks = 0
-            puzzle_string += str(num)
-
-    if current_blanks > 0:
-        puzzle_string += chr(ord('a') + current_blanks - 1)    
-    return puzzle_string
-
+# Format out:
+# '#3x3:4c5b2a'
 if __name__ == "__main__":
-    count_grid: List[str] = file_io.load_count_grid('count_grid.txt')
+    input_file = 'count_grid.txt'
+    output_file = 'tatham_encoding.txt'
+
+    if len(sys.argv) > 1:
+        input_file = sys.argv[1]
+    if len(sys.argv) > 2:
+        output_file = sys.argv[2]
+
+    count_grid: List[str] = file_io.load_count_grid(input_file)
     tatham_string: str = encode_grid_as_tatham_string(count_grid)
-    with open('tatham_encoding.txt', 'w') as f:
+    with open(output_file, 'w') as f:
         f.write(tatham_string)
     print(tatham_string)

@@ -34,7 +34,7 @@ def simplify_puzzle(puzzle: MosaicPuzzle, clue_order: List[Tuple[int, int]] = No
     simplified.clues[y][x] = None
 
     # Check if still unique
-    is_unique, _ = check_uniqueness(simplified)
+    is_unique, alt_solution = check_uniqueness(simplified)
     if not is_unique:
         # Restore clue if needed for uniqueness
         simplified.restore_clue(x, y)
