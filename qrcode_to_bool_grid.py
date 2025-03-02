@@ -74,10 +74,13 @@ def print_boolean_grid(bool_grid):
     print(grid_string)
     return grid_string
 
-if __name__ == "__main__":
-    qrcode_image = open_png_file(sys.argv[1])
-
+def image_to_bool_grid(image_filename):
+    qrcode_image = open_png_file(image_filename)
     bool_grid = shrink_boolean_grid(qrcode_to_boolean_grid(qrcode_image))
+    return bool_grid
+
+if __name__ == "__main__":
+    bool_grid = image_to_bool_grid(sys.argv[1])
     print_boolean_grid(bool_grid)
     output_file = sys.argv[2] if len(sys.argv) > 2 else 'bool_grid.txt'
     open(output_file, 'w').write(print_boolean_grid(bool_grid))

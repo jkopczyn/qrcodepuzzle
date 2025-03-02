@@ -3,6 +3,7 @@ import file_io
 import sys
 from process_count_grid import encode_grid_as_tatham_string
 
+PUZZLE_URL ="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/mosaic.html"
 # Format in:
 # 4--
 # -5-
@@ -24,3 +25,4 @@ if __name__ == "__main__":
     with open(output_file, 'w') as f:
         f.write(tatham_string)
     print(tatham_string)
+    print("Puzzle URL: {}".format(PUZZLE_URL + tatham_string))

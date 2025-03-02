@@ -20,7 +20,7 @@ def count_adjacent_ones(grid: List[List[bool]], row: int, col: int) -> int:
     
     return count
 
-def bool_grid_to_counts(bool_grid: List[List[bool]]) -> List[List[int]]:
+def bool_grid_to_count_grid(bool_grid: List[List[bool]]) -> List[List[int]]:
     if not bool_grid or not bool_grid[0]:
         return []
         
@@ -44,7 +44,7 @@ def process_grid_files(input_file: str, output_file: str) -> None:
         output_file: Path to save the output count grid
     """
     bool_grid = file_io.load_boolean_grid(input_file)
-    count_grid = bool_grid_to_counts(bool_grid)
+    count_grid = bool_grid_to_count_grid(bool_grid)
     file_io.save_count_grid(count_grid, output_file)
 
 if __name__ == "__main__":

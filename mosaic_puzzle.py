@@ -3,7 +3,7 @@ import random
 import copy
 from dataclasses import dataclass
 
-from bool_grid_to_count_grid import bool_grid_to_counts, count_adjacent_ones
+from bool_grid_to_count_grid import bool_grid_to_count_grid
 import file_io
 
 @dataclass
@@ -43,7 +43,7 @@ class MosaicPuzzle:
         """Generate a random puzzle with all cells filled and all clues computed"""
         grid = [[random.choice([True, False]) for _ in range(width)] 
                 for _ in range(height)]
-        clues = bool_grid_to_counts(grid)
+        clues = bool_grid_to_count_grid(grid)
         return cls(width, height, grid, clues)
     
     def remove_clue(self, x: int, y: int) -> None:

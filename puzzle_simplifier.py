@@ -61,8 +61,7 @@ def randomize_clue_order(puzzle: MosaicPuzzle) -> List[Tuple[int, int]]:
     random.shuffle(clue_positions)
     return clue_positions
 
-def deduplicate_count_grid(count_grid_filename: str, bool_grid_filename: str) -> MosaicPuzzle:
-    puzzle: MosaicPuzzle = MosaicPuzzle.from_file(count_grid_filename, bool_grid_filename)
+def deduplicate_count_grid(puzzle: MosaicPuzzle) -> MosaicPuzzle:
     print("Starting puzzle: {}".format(puzzle.clues))
     if not uniqueness_checker.check_validity(puzzle):
         print("Puzzle has no solution, cannot simplify")
@@ -79,6 +78,11 @@ def deduplicate_count_grid(count_grid_filename: str, bool_grid_filename: str) ->
         puzzle = simplified
     return puzzle
 
+def deduplicate_count_grid_from_files(count_grid_filename: str, bool_grid_filename: str, output_filename: str) -> MosaicPuzzle:
+    puzzle: MosaicPuzzle = MosaicPuzzle.from_file(count_grid_filename, bool_grid_filename)
+    puzzle = deduplicate_count_grid(puzzle)
+    file_io.save_count_grid(puzzle.clues, output_filename)
+
 if __name__ == "__main__":
     import sys
     count_grid_file, bool_grid_file, output_file = 'count_grid.txt', 'bool_grid.txt', 'deduplicated_count_grid.txt'
@@ -88,5 +92,4 @@ if __name__ == "__main__":
         bool_grid_file = sys.argv[2]
     if len(sys.argv) > 3:
         output_file = sys.argv[3]
-    puzzle = deduplicate_count_grid(count_grid_file, bool_grid_file)
-    file_io.save_count_grid(puzzle.clues, output_file)
+    deduplicate_count_grid_from_files(count_grid_file, bool_grid_file, output_file)
