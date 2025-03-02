@@ -19,7 +19,7 @@
 import file_io
 from typing import List, Tuple
 from mosaic_puzzle import MosaicPuzzle
-from puzzle_simplifier import simplify_puzzle
+from puzzle_simplifier import simplify_puzzle, randomize_clue_order
 
 if __name__ == "__main__":
     existing_puzzle = file_io.load_count_grid('count_grid.txt')
@@ -29,9 +29,10 @@ if __name__ == "__main__":
     grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
     print("Starting puzzle: {}".format(puzzle.clues))
-    clue_positions: List[Tuple[int, int]] = [(0, 0), (1, 0), (1, 1), (0, 2), (2, 0), (1, 2), (2, 1)]
+    clue_order = randomize_clue_order(puzzle)
+    print(clue_order)
     for i in range(len(puzzle.clues)**2):
-        simplified, clue_positions = simplify_puzzle(puzzle, clue_positions)
+        simplified, clue_order = simplify_puzzle(puzzle, clue_order)
         print("before: {}\n after: {}".format(puzzle.clues, simplified.clues))
         # if simplified.clues == puzzle.clues:
         #     break
