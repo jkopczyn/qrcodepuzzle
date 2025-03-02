@@ -21,21 +21,27 @@ from typing import List, Tuple
 from mosaic_puzzle import MosaicPuzzle
 from puzzle_simplifier import simplify_puzzle, randomize_clue_order
 
-if __name__ == "__main__":
-    existing_puzzle = file_io.load_count_grid('count_grid.txt')
-    bool_grid = file_io.load_boolean_grid('bool_grid.txt')
-    # Convert count grid to MosaicPuzzle
-    width: int = len(existing_puzzle[0])
-    height: int = len(existing_puzzle)
-    grid: List[List[bool]] = bool_grid
-    puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
+def deduplicate_count_grid(count_grid_filename: str, bool_grid_filename: str) -> MosaicPuzzle:
+    puzzle: MosaicPuzzle = MosaicPuzzle.from_file(count_grid_filename, bool_grid_filename)
     print("Starting puzzle: {}".format(puzzle.clues))
     clue_order = randomize_clue_order(puzzle)
     print(clue_order)
-    for i in range(len(puzzle.clues)**2):
+    for i in range(puzzle.width * puzzle.height):
         simplified, clue_order = simplify_puzzle(puzzle, clue_order)
         print("before: {}\n after: {}".format(puzzle.clues, simplified.clues))
         # if simplified.clues == puzzle.clues:
         #     break
         puzzle = simplified
-    file_io.save_count_grid(puzzle.clues, 'deduplicated_count_grid.txt')
+    return puzzle
+
+if __name__ == "__main__":
+    import sys
+    count_grid_file, bool_grid_file, output_file = 'count_grid.txt', 'bool_grid.txt', 'deduplicated_count_grid.txt'
+    if len(sys.argv) > 1:
+        count_grid_file = sys.argv[1]
+    if len(sys.argv) > 2:
+        bool_grid_file = sys.argv[2]
+    if len(sys.argv) > 3:
+        output_file = sys.argv[3]
+    puzzle = deduplicate_count_grid(count_grid_file, bool_grid_file)
+    file_io.save_count_grid(puzzle.clues, output_file)
