@@ -17,7 +17,7 @@
 # (2, [4,5,6,7,8,9])
 
 import file_io
-from typing import List
+from typing import List, Tuple
 from mosaic_puzzle import MosaicPuzzle
 from puzzle_simplifier import simplify_puzzle
 
@@ -28,11 +28,12 @@ if __name__ == "__main__":
     height: int = len(existing_puzzle)
     grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
     puzzle: MosaicPuzzle = MosaicPuzzle(width, height, grid, existing_puzzle)
-    print(puzzle.clues)
+    print("Starting puzzle: {}".format(puzzle.clues))
+    clue_positions: List[Tuple[int, int]] = None
     for i in range(len(puzzle.clues)**2):
-        simplified = simplify_puzzle(puzzle)
+        simplified, clue_positions = simplify_puzzle(puzzle, clue_positions)
         print("before: {}\n after: {}".format(puzzle.clues, simplified.clues))
-        if simplified.clues == puzzle.clues:
-            break
+        # if simplified.clues == puzzle.clues:
+        #     break
         puzzle = simplified
     file_io.save_count_grid(puzzle.clues, 'deduplicated_count_grid.txt')
