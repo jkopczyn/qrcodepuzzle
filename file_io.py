@@ -26,7 +26,14 @@ def load_boolean_grid(file_path):
         
         bool_grid = []
         for line in lines:
-            row = [char == '#' for char in line.strip()]
+            row = []
+            for char in line.strip():
+                if char == '1':
+                    row.append(True)
+                elif char == '0':
+                    row.append(False)
+                else:
+                    raise ValueError(f"Invalid character in boolean grid: {char}")
             bool_grid.append(row)
             
         return bool_grid
