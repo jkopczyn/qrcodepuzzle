@@ -64,6 +64,9 @@ def randomize_clue_order(puzzle: MosaicPuzzle) -> List[Tuple[int, int]]:
     return clue_positions
 
 def deduplicate_count_grid(puzzle: MosaicPuzzle) -> MosaicPuzzle:
+    puzzle = copy.deepcopy(puzzle)
+    assert len(puzzle.grid) == puzzle.height and len(puzzle.grid[0]) == puzzle.width, "Expected grid to match puzzle dimensions, got {}x{} instead of {}x{}".format(len(puzzle.grid), len(puzzle.grid[0]), puzzle.height, puzzle.width)
+    assert puzzle.height == puzzle.width, "Expected square grid, got {}x{}".format(puzzle.height, puzzle.width)
     print("Starting puzzle: {}".format(puzzle.clues))
     if not uniqueness_checker.check_validity(puzzle):
         print("Puzzle has no solution, cannot simplify")

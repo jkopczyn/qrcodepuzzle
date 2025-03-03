@@ -4,7 +4,7 @@ import json
 def save_boolean_grid(grid: List[List[int]], file_path: str) -> None:
     output_str = ''
     for row in grid:
-        row_str = ''.join(str(x) if (x is not None and x >= 0) else '-' for x in row) + '\n'
+        row_str = ''.join(str(int(x)) if (x is not None and x >= 0) else '-' for x in row) + '\n'
         output_str += row_str
     print(output_str)
     with open(file_path, 'w') as file:
