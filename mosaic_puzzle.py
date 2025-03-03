@@ -30,7 +30,7 @@ class MosaicPuzzle:
         if boolean_grid_filename:
             grid = file_io.load_boolean_grid(boolean_grid_filename)
         else:
-            grid: List[List[bool]] = [[False] * width for _ in range(height)]  # Initial grid doesn't matter for simplification
+            grid: List[List[bool]] = [[False] * width for _ in range(height)]  # default to empty
         return cls(width, height, grid, existing_puzzle)
 
     def to_file(self, count_grid_filename: str, boolean_grid_filename: Optional[str] = None):
