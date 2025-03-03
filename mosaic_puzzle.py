@@ -41,15 +41,15 @@ class MosaicPuzzle:
     @classmethod
     def generate_random(cls, width: int, height: int) -> 'MosaicPuzzle':
         """Generate a random puzzle with all cells filled and all clues computed"""
-        grid = [[random.choice([True, False]) for _ in range(width)] 
+        grid = [[random.choice([True, False]) for _ in range(width)]
                 for _ in range(height)]
         clues = bool_grid_to_count_grid(grid)
         return cls(width, height, grid, clues)
-    
+
     def remove_clue(self, x: int, y: int) -> None:
         """Remove clue at position (x,y)"""
         self.clues[y][x] = None
-    
+
     def restore_clue(self, x: int, y: int) -> None:
         """Recompute and restore clue at position (x,y)"""
         self.clues[y][x] = self.original_clues[y][x]

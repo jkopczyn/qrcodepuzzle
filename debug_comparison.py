@@ -13,30 +13,30 @@ def debug_comparison(puzzle: MosaicPuzzle):
     print("=== ORIGINAL PUZZLE ===")
     print(f"Clues: {puzzle.clues}")
     print(f"Grid: {puzzle.grid}")
-    
+
     # Path 1: check_validity approach
     print("\n=== CHECK_VALIDITY PATH ===")
-    
+
     # Follow check_validity execution
     constraints1, var_mapping1 = grid_to_constraints(puzzle.clues)
     print(f"Constraints from grid_to_constraints: {constraints1}")
     print(f"Variable mapping: {var_mapping1}")
-    
+
     cnf_clauses1, _ = create_multiple_eqN_constraints(constraints1)
     print(f"CNF clauses count: {len(cnf_clauses1)}")
     print(f"First 5 clauses: {cnf_clauses1[:5]}")
-    
+
     cnf1 = CNF(from_clauses=cnf_clauses1)
-    
+
     # Path 2: test_cnf approach
     print("\n=== TEST_CNF PATH ===")
-    
+
     # Follow test_cnf execution
     clauses2, var_mapping2 = create_constraints_from_puzzle(puzzle.clues)
     print(f"CNF clauses count from create_constraints_from_puzzle: {len(clauses2)}")
     print(f"First 5 clauses: {clauses2[:5]}")
     print(f"Variable mapping: {var_mapping2}")
-    
+
     # Compare the actual solutions
     print("\n=== COMPARING SOLUTIONS ===")
     # Solve with path 1
@@ -47,7 +47,7 @@ def debug_comparison(puzzle: MosaicPuzzle):
             model1 = solver.get_model()
             true_vars1 = [i for i in range(1, len(model1)+1) if model1[i-1] > 0]
             print(f"True variables: {true_vars1[:10]}{'...' if len(true_vars1) > 10 else ''}")
-    
+
     # Create CNF for path 2 and solve
     cnf2 = CNF(from_clauses=clauses2) if not isinstance(clauses2, CNF) else clauses2
     with Glucose3(cnf2) as solver:
@@ -57,18 +57,18 @@ def debug_comparison(puzzle: MosaicPuzzle):
             model2 = solver.get_model()
             true_vars2 = [i for i in range(1, len(model2)+1) if model2[i-1] > 0]
             print(f"True variables: {true_vars2[:10]}{'...' if len(true_vars2) > 10 else ''}")
-    
+
     # Compare clause sets
     print("\n=== CLAUSES COMPARISON ===")
     clauses_set1 = {tuple(sorted(clause)) for clause in cnf_clauses1}
     clauses_set2 = {tuple(sorted(clause)) for clause in clauses2}
-    
+
     print(f"Path 1 unique clauses: {len(clauses_set1 - clauses_set2)}")
     print(f"Path 2 unique clauses: {len(clauses_set2 - clauses_set1)}")
-    
+
     if clauses_set1 != clauses_set2:
         print("DIFFERENCE FOUND: Clause sets are not identical!")
-        
+
         # Show some differences
         if clauses_set1 - clauses_set2:
             print(f"Example clauses in path 1 but not path 2: {list(clauses_set1 - clauses_set2)[:3]}")
@@ -89,10 +89,10 @@ def debug_comparison(puzzle: MosaicPuzzle):
         if keys1 != keys2:
             print(f"Keys in mapping1 but not mapping2: {keys1 - keys2}")
             print(f"Keys in mapping2 but not mapping1: {keys2 - keys1}")
-        
+
         # Find differences in values for common keys
         common_keys = keys1.intersection(keys2)
-        different_values = {k: (var_mapping1[k], var_mapping2[k]) 
+        different_values = {k: (var_mapping1[k], var_mapping2[k])
                            for k in common_keys if var_mapping1[k] != var_mapping2[k]}
         if different_values:
             print(f"Different values for common keys: {different_values}")
@@ -102,4 +102,4 @@ if __name__ == "__main__":
     # Load your puzzle
     count_grid_file, bool_grid_file = 'count_grid.txt', 'bool_grid.txt'
     puzzle = MosaicPuzzle.from_file(count_grid_file, bool_grid_file)
-    debug_comparison(puzzle) 
+    debug_comparison(puzzle)

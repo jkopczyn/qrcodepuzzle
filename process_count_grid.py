@@ -17,12 +17,12 @@ def grid_to_constraints(grid: List[List[int]]) -> Tuple[List[Tuple[int, List[int
     """
     constraints: List[Tuple[int, List[int]]] = []
     var_mapping: Dict[Tuple[int, int], int] = {}
-    
+
     # Create variable mapping first
     for y in range(len(grid)):
         for x in range(len(grid[0])):
             var_mapping[(x,y)] = position_to_variable_int(grid, x, y)
-            
+
     for y in range(len(grid)):
         for x in range(len(grid[0])):
             c = grid[y][x]
@@ -89,5 +89,5 @@ def encode_grid_as_tatham_string(grid: List[str]) -> str:
             puzzle_string += str(num)
 
     if current_blanks > 0:
-        puzzle_string += chr(ord('a') + current_blanks - 1)    
+        puzzle_string += chr(ord('a') + current_blanks - 1)
     return puzzle_string

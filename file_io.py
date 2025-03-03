@@ -23,7 +23,7 @@ def load_boolean_grid(file_path):
     try:
         with open(file_path, 'r') as file:
             lines = file.readlines()
-        
+
         bool_grid = []
         for line in lines:
             row = []
@@ -35,7 +35,7 @@ def load_boolean_grid(file_path):
                 else:
                     raise ValueError(f"Invalid character in boolean grid: {char}")
             bool_grid.append(row)
-            
+
         return bool_grid
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")

@@ -36,11 +36,11 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
     """
     # Convert puzzle to constraints using existing function
     constraints, var_mapping = grid_to_constraints(puzzle.clues)
-    
+
     # Create SAT encoding
     cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
     cnf = CNF(from_clauses=cnf_clauses)
-    
+
     # Ensure puzzle.grid dimensions match what's in var_mapping
     # This is important before calling create_blocking_clauses
     if puzzle.grid and var_mapping:
@@ -51,7 +51,7 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
     # Add blocking clauses for known solution
     blocking = create_blocking_clauses(var_mapping, puzzle.grid)
     cnf.extend(blocking)
-    
+
     # Check for alternative solutions
     with Glucose3(cnf) as solver:
         if solver.solve():

@@ -52,11 +52,11 @@ from mosaic_puzzle import MosaicPuzzle
 def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
     """
     Creates an exactly-N constraint over the given x variables using sequential counter encoding.
-    
+
     Args:
         x_vars: List of variable numbers to constrain
         n: The exact number of variables that must be True
-        
+
     Returns:
         Tuple containing:
         - List of CNF clauses (each clause is a list of integers)
@@ -69,13 +69,13 @@ def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], D
     next_var: int = nonce
     nonce = next_var + (len(x_vars) * (n+1))  # Reserve space for all counter vars
     counter_vars: Dict[Tuple[int, int], int] = {}  # Maps (i,j) to variable number for s_ij
-    
+
     # Create counter variables s_ij
     for i in range(1, len(x_vars) + 1):
         for j in range(1, n+1):  # Count up to n
             counter_vars[(i,j)] = next_var
             next_var += 1
-    
+
     # For first variable (x1)
     # PROP01: (x1 -> s11)
     cnf.append([-x_vars[0], counter_vars[(1,1)]])
@@ -84,40 +84,40 @@ def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], D
     # PROP04: (~s12 AND ~s13) - impossible to have >1 true in 1 var
     for i in range(2,n+1):
         cnf.append([-counter_vars[(1,i)]])
-    
+
     # For middle variables
     for i in range(2, len(x_vars)):
         var_idx = i - 1  # Convert to 0-based index
-        
+
         # PROP11: (xi -> si1) AND (xi -> ~s(i-1)3)
         cnf.append([-x_vars[var_idx], counter_vars[(i,1)]])
         cnf.append([-x_vars[var_idx], -counter_vars[(i-1,n)]])
-        
+
         # PROP12: (s(i-1)1 -> si1)
         cnf.append([-counter_vars[(i-1,1)], counter_vars[(i,1)]])
-        
+
         # PROP13: (si1 -> (xi OR s(i-1)1))
         cnf.append([-counter_vars[(i,1)], x_vars[var_idx], counter_vars[(i-1,1)]])
-        
+
         # For each counter value j
         for j in range(2, n+1):
             # PROP21: ((xi AND s(i-1)(j-1)) -> sij) AND (s(i-1)j -> sij)
             cnf.append([-x_vars[var_idx], -counter_vars[(i-1,j-1)], counter_vars[(i,j)]])
             cnf.append([-counter_vars[(i-1,j)], counter_vars[(i,j)]])
-            
+
             # PROP22: (sij -> (xi OR s(i-1)j)) AND (sij -> (s(i-1)(j-1) OR s(i-1)j))
             cnf.append([-counter_vars[(i,j)], x_vars[var_idx], counter_vars[(i-1,j)]])
             cnf.append([-counter_vars[(i,j)], counter_vars[(i-1,j-1)], counter_vars[(i-1,j)]])
-    
+
     # For last variable (xn)
     last_i = len(x_vars)
     last_x = x_vars[-1]
-    
+
     # Similar props as middle variables
     cnf.append([-last_x, counter_vars[(last_i,1)]])
     cnf.append([-counter_vars[(last_i-1,1)], counter_vars[(last_i,1)]])
     cnf.append([-counter_vars[(last_i,1)], last_x, counter_vars[(last_i-1,1)]])
-    
+
     for j in range(2, n+1):
         # Add counter propagation for last variable
         cnf.append([-last_x, -counter_vars[(last_i-1,j-1)], counter_vars[(last_i,j)]])
@@ -129,7 +129,7 @@ def create_eqN_constraint(x_vars: List[int], n: int) -> Tuple[List[List[int]], D
     cnf.append([counter_vars[(last_i,n)]])
     # PROP03: (xn -> ~s(n-1)3) - max_3 constraint
     cnf.append([-last_x, -counter_vars[(last_i-1,n)]])
-    
+
     return cnf, counter_vars
 
 def create_multiple_eqN_constraints(constraints: List[Tuple[int, List[int]]]) -> Tuple[List[List[int]], List[Dict[Tuple[int, int], int]]]:
@@ -161,7 +161,7 @@ def create_multiple_eqN_constraints(constraints: List[Tuple[int, List[int]]]) ->
 def test_eqN(n: List[int]) -> None:
     # Create 5 variables (numbered 1-5)
     x_vars: List[int] = list(range(1, n+2))
-    
+
     cnf = CNF()
     clauses, counter_vars = create_eqN_constraint(x_vars, n)
     cnf.extend(clauses)
@@ -171,11 +171,11 @@ def test_eqN(n: List[int]) -> None:
 def test_cnf(cnf: CNF, vars: List[int]) -> List[int]:
     """
     Test a CNF formula and return the variables that are True in the solution.
-    
+
     Args:
         cnf: The CNF formula to test
         vars: List of variables to check in the solution
-        
+
     Returns:
         List of variables that are True in the solution, or empty list if no solution
     """
@@ -193,10 +193,10 @@ def test_cnf(cnf: CNF, vars: List[int]) -> List[int]:
 def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[List[int]], Dict[Tuple[int, int], int]]:
     """
     Convert puzzle clues to SAT constraints and create CNF encoding.
-    
+
     Args:
         puzzle_clues: 2D list of integers representing the puzzle clues
-        
+
     Returns:
         Tuple containing:
         - List of CNF clauses
@@ -204,11 +204,11 @@ def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[
     """
     # Extract constraints from grid
     constraints, var_mapping = grid_to_constraints(puzzle_clues)
-    
+
     # Initialize the global nonce to start after the highest grid variable
     global nonce
     nonce = max(var_mapping.values()) + 1
-    
+
     # Create SAT encoding using constraints
     cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
     return cnf_clauses, var_mapping
@@ -216,7 +216,7 @@ def create_constraints_from_puzzle(puzzle_clues: List[List[int]]) -> Tuple[List[
 if __name__ == "__main__":
     # test_eqN(3)
     # test_eqN(5)
- 
+
 
     # Examples:
     # 453
@@ -228,7 +228,7 @@ if __name__ == "__main__":
     count_grid_file = 'count_grid.txt' if len(sys.argv) < 2 else sys.argv[1]
     bool_grid_file = 'bool_grid.txt' if len(sys.argv) < 3 else sys.argv[2]
     puzzle = MosaicPuzzle.from_file(count_grid_file, bool_grid_file)
-    
+
     # Create SAT constraints from puzzle
     clauses, var_mapping = create_constraints_from_puzzle(puzzle.clues)
     print(clauses)
