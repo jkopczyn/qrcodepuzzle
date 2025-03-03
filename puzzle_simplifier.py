@@ -30,6 +30,8 @@ def simplify_puzzle(puzzle: MosaicPuzzle, clue_order: List[Tuple[int, int]] = No
     Returns simplified puzzle.
     """
     simplified = copy.deepcopy(puzzle)
+    assert len(simplified.grid) == simplified.height and len(simplified.grid[0]) == simplified.width, "Expected grid to match puzzle dimensions, got {}x{} instead of {}x{}".format(len(simplified.grid), len(simplified.grid[0]), simplified.height, simplified.width)
+    assert simplified.height == simplified.width, "Expected square grid, got {}x{}".format(simplified.height, simplified.width)
 
     if clue_order is None:
         # Remove clues in random order, but set an order

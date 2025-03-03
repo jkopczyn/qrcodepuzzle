@@ -14,9 +14,15 @@ def create_blocking_clauses(var_mapping: Dict[Tuple[int, int], int], solution: L
     # Create one big clause: (NOT x1 OR NOT x2 ... OR NOT xn) for True cells
     # and (x1 OR x2 ... OR xn) for False cells
     blocking_clause = []
-    for y in range(len(solution)):
-        for x in range(len(solution[0])):
-            var = var_mapping[(x, y)]
+    height, width = len(solution), len(solution[0])
+    assert height == width, "Expected square grid, got {}x{}".format(height, width)
+    for y in range(height):
+        for x in range(width):
+            try:
+                var = var_mapping[(x, y)]
+            except KeyError:
+                print("KeyError: var_mapping[(x, y)] = {}, w x h = {}x{}".format((x, y), width, height))
+                raise
             if solution[y][x]:
                 blocking_clause.append(-var)  # Must flip at least one True to False
             else:
@@ -35,6 +41,13 @@ def check_uniqueness(puzzle: MosaicPuzzle) -> Tuple[bool, Optional[List[List[boo
     cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
     cnf = CNF(from_clauses=cnf_clauses)
     
+    # Ensure puzzle.grid dimensions match what's in var_mapping
+    # This is important before calling create_blocking_clauses
+    if puzzle.grid and var_mapping:
+        max_x = max(x for x, _ in var_mapping.keys())
+        max_y = max(y for _, y in var_mapping.keys())
+        assert max_x < puzzle.width and max_y < puzzle.height, "Puzzle grid dimensions {}x{} do not match var_mapping maximum coordinates {}x{}".format(puzzle.width, puzzle.height, max_x, max_y)
+
     # Add blocking clauses for known solution
     blocking = create_blocking_clauses(var_mapping, puzzle.grid)
     cnf.extend(blocking)
@@ -55,11 +68,9 @@ def check_validity(puzzle: MosaicPuzzle) -> bool:
 
     # Set the starting variable number for auxiliary variables
     # to be after the highest grid variable
-    max_var = max(var_mapping.values()) + 1
-
     # Initialize the global nonce in sat_problems
     import sat_problems
-    sat_problems.nonce = max_var
+    sat_problems.nonce = max(var_mapping.values()) + 1
 
     cnf_clauses, _ = create_multiple_eqN_constraints(constraints)
     cnf = CNF(from_clauses=cnf_clauses)
