@@ -35,7 +35,7 @@ def bool_grid_to_count_grid(bool_grid: List[List[bool]]) -> List[List[int]]:
         count_grid.append(count_row)
     return count_grid
 
-def process_grid_files(input_file: str, output_file: str) -> None:
+def process_grid_files(input_filename: str, output_filename: str) -> None:
     """
     Processes a boolean grid file, converts it to a count grid, and saves the result.
 
@@ -43,9 +43,9 @@ def process_grid_files(input_file: str, output_file: str) -> None:
         input_file: Path to the input boolean grid file
         output_file: Path to save the output count grid
     """
-    bool_grid = file_io.load_boolean_grid(input_file)
+    bool_grid = file_io.load_boolean_grid(input_filename)
     count_grid = bool_grid_to_count_grid(bool_grid)
-    file_io.save_count_grid(count_grid, output_file)
+    file_io.save_count_grid(count_grid, output_filename)
 
 if __name__ == "__main__":
     # Default filenames

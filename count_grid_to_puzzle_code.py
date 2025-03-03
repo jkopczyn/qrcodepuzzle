@@ -1,6 +1,6 @@
+import sys
 from typing import List
 import file_io
-import sys
 from process_count_grid import encode_grid_as_tatham_string
 
 PUZZLE_URL ="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/mosaic.html"
