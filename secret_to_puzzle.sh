@@ -8,6 +8,22 @@ if [ $# -eq 0 ]; then
 fi
 
 MESSAGE="$1"
+# Start timing
+start_time=$(date +%s.%N)
+
+# Function to display elapsed time
+show_elapsed_time() {
+  local end_time=$(date +%s.%N)
+  local elapsed=$(echo "$end_time - $start_time" | bc)
+  echo "Elapsed time: $elapsed seconds"
+  # Display message length
+  echo "Message length: ${#MESSAGE} characters"
+}
+
+# Set trap to show timing on script exit
+trap show_elapsed_time EXIT
+
+echo "Starting secret to puzzle conversion at $(date)"
 
 # Save the message to a text file
 echo "$MESSAGE" > puzzleanswer.txt

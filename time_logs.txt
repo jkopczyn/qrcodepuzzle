@@ -1,0 +1,16 @@
+chars     size    time      clauses
+21        21x21   251.9s    146,076
+23        25x25   845.4s    223,354
+45        25x25  2006.4s    305,784
+68        29x29
+
+tentative: n^7 on grid dim
+n^2.5 for clauses
+
+Maxes by size
+21x21: 25 chars
+25x25: 47 chars
+29x29: 77 chars
+33x33: 114 chars
+37x37: 154 chars
+41x41: 195 chars
