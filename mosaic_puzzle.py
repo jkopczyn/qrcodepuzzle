@@ -53,3 +53,14 @@ class MosaicPuzzle:
     def restore_clue(self, x: int, y: int) -> None:
         """Recompute and restore clue at position (x,y)"""
         self.clues[y][x] = self.original_clues[y][x]
+
+    def count_squares(self) -> Tuple[int, int]:
+        """Count the number of black and white squares in the puzzle"""
+        black, white = 0, 0
+        for row in self.grid:
+            full = len(row)
+            black_row = sum(row)
+            white_row = full - black_row
+            black += black_row
+            white += white_row
+        return black, white

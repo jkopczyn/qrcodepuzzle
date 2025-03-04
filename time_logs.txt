@@ -1,8 +1,9 @@
-chars     size    time      clauses
-21        21x21   251.9s    146,076
-23        25x25   845.4s    223,354
-45        25x25  2006.4s    305,784
-68        29x29
+chars     size    time      clauses     black     white
+ 3        21x21   245.0s    158,049     234       207
+21        21x21   251.9s    146,076     ?         ?
+23        25x25   845.4s    223,354     ?         ?
+45        25x25  2006.4s    305,784     ?         ?
+68        29x29  2070.4s    305,892     ?         ?
 
 tentative: n^7 on grid dim
 n^2.5 for clauses
